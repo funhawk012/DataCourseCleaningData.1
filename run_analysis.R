@@ -1,41 +1,35 @@
-X <- rbind(x_train,x_test)
-Y <- rbind(y_train,y_test)
-Subject <- rbind(subject_train,subject_test)
-Merged_Data <- cbind(Subject,Y,X)
+y <- rbind(x_train,x_test)
+z <- rbind(y_train,y_test)
+relatableContent <- rbind(subject_train,subject_test)
+conData <- cbind(relatableContent,Y,X)
 
-TidyData <- Merged_Data %>% select(subject,code,contains("mean"), contains("std"))
-TidyData$code <- activities[TidyData$code,2]
+tidyWork <- conData %>% select(relatableContent,code,contains("mean"), contains("std"))
+tidyWork$code <- activities[TidyData$code,2]
 
-names(TidyData)[2] = "activity"
+## tidyWork essentially cleans up all of the measurements and leaves up only the selections of "code" and "subject"
+names(tidyWork)[2] = "activity"
+## Along with each data piece put into the system, the names function renames the data set with different names necessary for the cleanup
+names(tidyWork)<-gsub("Acc","Accelerometer",names(TidyData))
+names(tidyWork)<-gsub("Gyro","Gyroscope",names(TidyData))
+names(tidyWork)<-gsub("BodyBody","Body",names(TidyData))
+names(tidyWork)<-gsub("Mag","Magnitude",names(TidyData))
+names(tidyWork)<-gsub("^t","Time",names(TidyData))
+names(tidyWork)<-gsub("^f","Frequency",names(TidyData))
+names(tidyWork)<-gsub("tBody","TimeBody",names(TidyData))
+names(tidyWork)<-gsub("-mean()","Mean",names(TidyData),ignore.case = TRUE)
+names(tidyWork)<-gsub("-std()","STD",names(TidyData),ignrore.case = TRUE)
+names(tidyWork)<-gsub("-freq()","Frequency",names(TidyData),ignore.case = TRUE)
+names(tidyWork)<-gsub("angle","Angle",names(TidyData))
+names(tidyWork)<-gsub("gravity","Gravity",names(TidyData))
 
-names(TidyData)<-gsub("Acc","Accelerometer",names(TidyData))
-
-names(TidyData)<-gsub("Gyro","Gyroscope",names(TidyData))
-
-names(TidyData)<-gsub("BodyBody","Body",names(TidyData))
-
-names(TidyData)<-gsub("Mag","Magnitude",names(TidyData))
-
-names(TidyData)<-gsub("^t","Time",names(TidyData))
-
-names(TidyData)<-gsub("^f","Frequency",names(TidyData))
-
-names(TidyData)<-gsub("tBody","TimeBody",names(TidyData))
-
-names(TidyData)<-gsub("-mean()","Mean",names(TidyData),ignore.case = TRUE)
-
-names(TidyData)<-gsub("-std()","STD",names(TidyData),ignrore.case = TRUE)
-
-names(TidyData)<-gsub("-freq()","Frequency",names(TidyData),ignore.case = TRUE)
-
-names(TidyData)<-gsub("angle","Angle",names(TidyData))
-
-names(TidyData)<-gsub("gravity","Gravity",names(TidyData))
-
-FinalData <- TidyData %>%
-  group_by(subject,activity) %>%
+### I will create a variable called FinalDataResults,  which stores tidyWork into it for the final steps...
+FinalDataResults <- tidyWork %>%
+### group_by takes an existing tbl and converts it so that operations to the data will be performed "by group"
+  group_by(relatableContent,activity) %>%
+### summarise.all takes the function and converts the mean to it, therefore only showing the mean and standard deviation.
   summarise_all(funs(mean))
-write.table(FinalData,"FinalData.txt",row.name=FALSE)
+## write.table takes the results and processes the final text into code. 
+write.table(FinalDataResults,"FinalData.txt",row.name=FALSE)
 
-
-str(FinalData)
+### The str function helps show the final code. 
+str(FinalDataResults)
