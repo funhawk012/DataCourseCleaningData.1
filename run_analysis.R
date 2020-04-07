@@ -12,7 +12,9 @@ subject.train <- read.csv('./UCI HAR Dataset/train/subject_train.txt',header = F
 data.train <- data.frame(subject.train,activity.train.txt.forme,X.Train.data)
 names(data.train) <- c(c('subject.train','activity.train'),features.txttome)
 
-### Then I create a few more variables that help me test out the dataset and also graph the subject and the activity of the 
+### Then I create a few more variables that help me test out the dataset and also graph the subject and the activity of the files onto
+### the improved set. datatest.x, activity.test,subject.test,data.testA, will all help me to store the test txt of each part of the data
+### and the names function brings the features all together!
 
 datatest.x <- read.table('./UCI HAR Dataset/test/X_test.txt')
 activity.test <- read.csv('./UCI HAR Dataset/test/y_test.txt', header = FALSE, sep = ' ')
@@ -20,6 +22,11 @@ subject.test <- read.csv('./UCI HAR Dataset/test/subject_test.txt', header = FAL
 data.testA <-  data.frame(subject.test, activity.test, datatest.x)
 names(data.testA) <- c(c('subject.train', 'activity.train'), features.txttome)
 
+### Then I will use datafor.all as a variable to rbind, or bind together, the other variables that stored information from the 
+### original data files. grep essentially on the next line then looks for patterns in the regular expressions that has mean or 
+### standard deviation information found within the files. Then I create a few more variables, such as activity.read.labels, and 
+### data.sub$activity, to help store the activity_labels txt inside of the cleaning up process to ensure that there will be no extra
+### kinks in the new and improved code. header = FALSE, means that there will be no header.
 
 datafor.all <- rbind(data.train,data.testA)
 mean_std.select <- grep('mean|std', features.txttome)
@@ -52,3 +59,5 @@ names(data.sub) <- a.name
 
 data.tidy <- aggregate(data.sub[,3:81], by = list(activity.train = data.sub$activity, subject.train = data.sub$subject),FUN = mean)
 write.table(x = data.tidyset, file = "data_tidy.txt", row.names = FALSE)
+### Then I will write the names function, which now gives me the new and improved Dataset!
+names(data.tidyset)
