@@ -16,11 +16,14 @@ I used some variables to figure out these problems that occured:
 subject.train is a variable that, you guessed it, also contains the read.csv function for the Y_train.txt!
 data.train is a variable that stores the data from X_train.data
 names is a function that takes data.train and stores it in a c() vector along with the subject.train, activity.train, and features.txttome!
-datatest.x then takes read.table from X_test.txt and stores that information found in the file. 
-activity.test
-subject.test
-data.testA
+* then takes read.table from X_test.txt and stores that information found in the file. 
+activity.test is a variable that takes read.csv to the file activity_test.txt in the file directory of the data.
+subject.test is a variable that takes read.csv to the file subject_test.txt in the file directory of the data.
+data.testA is a variable that takes the data.frame of the subject.test, and the activity.test to combine both into one dataset!
 And names wraps up data.testA just like in the last names function, along with subject.train, activity.train, and features.txttome!
+
+
+
 
 names function then takes the data.sub, which is the data substring, and then using....
 a.name as a variable, I proceed to name several variables with the name a.name
