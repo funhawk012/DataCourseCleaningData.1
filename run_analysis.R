@@ -1,35 +1,32 @@
-y <- rbind(x_train,x_test)
-z <- rbind(y_train,y_test)
-relatableContent <- rbind(subject_train,subject_test)
-conData <- cbind(relatableContent,Y,X)
-
-tidyWork <- conData %>% select(relatableContent,code,contains("mean"), contains("std"))
-tidyWork$code <- activities[TidyData$code,2]
-
-## tidyWork essentially cleans up all of the measurements and leaves up only the selections of "code" and "subject"
-names(tidyWork)[2] = "activity"
-## Along with each data piece put into the system, the names function renames the data set with different names necessary for the cleanup
-names(tidyWork)<-gsub("Acc","Accelerometer",names(TidyData))
-names(tidyWork)<-gsub("Gyro","Gyroscope",names(TidyData))
-names(tidyWork)<-gsub("BodyBody","Body",names(TidyData))
-names(tidyWork)<-gsub("Mag","Magnitude",names(TidyData))
-names(tidyWork)<-gsub("^t","Time",names(TidyData))
-names(tidyWork)<-gsub("^f","Frequency",names(TidyData))
-names(tidyWork)<-gsub("tBody","TimeBody",names(TidyData))
-names(tidyWork)<-gsub("-mean()","Mean",names(TidyData),ignore.case = TRUE)
-names(tidyWork)<-gsub("-std()","STD",names(TidyData),ignrore.case = TRUE)
-names(tidyWork)<-gsub("-freq()","Frequency",names(TidyData),ignore.case = TRUE)
-names(tidyWork)<-gsub("angle","Angle",names(TidyData))
-names(tidyWork)<-gsub("gravity","Gravity",names(TidyData))
-
-### I will create a variable called FinalDataResults,  which stores tidyWork into it for the final steps...
-FinalDataResults <- tidyWork %>%
-### group_by takes an existing tbl and converts it so that operations to the data will be performed "by group"
-  group_by(relatableContent,activity) %>%
-### summarise.all takes the function and converts the mean to it, therefore only showing the mean and standard deviation.
-  summarise_all(funs(mean))
-## write.table takes the results and processes the final text into code. 
-write.table(FinalDataResults,"FinalData.txt",row.name=FALSE)
-
-### The str function helps show the final code. 
-str(FinalDataResults)
+features.txt <- read.csv('./UCI HAR Dataset/features.txt', header = FALSE, sep = '')
+features.txttome <- as.character(features[,2])
+X.Train.data <- read.table('./UCI HAR Dataset/train/X_train.txt')
+activity.train <- read.csv('./UCI HAR Dataset/train/Y_train.txt', header = FALSE, sep = '')
+subject.train <- read.csv('./UCI HAR Dataset/train/subject_train.txt',header = FALSE,sep = '')
+data.train <- data.frame(subject.train,activity.train,X.Train.data)
+names(data.train) <- c(c('subject.train','activity.train'),features.txttome)
+datatest.x <- read.table('./UCI HAR Dataset/test/X_test.txt')
+activity.test <- read.csv('./UCI HAR Dataset/test/y_test.txt', header = FALSE, sep = ' ')
+subject.test <- read.csv('./UCI HAR Dataset/test/subject_test.txt', header = FALSE, sep = ' ')
+data.testA <-  data.frame(subject.test, activity.test, datatest.x)
+names(data.testA) <- c(c('subject.train', 'activity.train'), features.txttome)
+datafor.all <- rbind(data.train,data.testA)
+mean_std.select <- grep('mean|std', features.txttome)
+data.sub <- datafor.all[,c(1,2,mean_std.select + 2)] 
+activity.read.labels <- read.table('./UCI HAR Dataset/activity_labels.txt', header = FALSE)
+activity.read.labels <- as.character(activity.read.labels[.2])
+data.sub$activity <- activity.read.labels[data.sub$activity]
+names(data.sub) <- new.name
+name.new <- names(data.sub)
+name.new <- gsub("[(][)]", "", name.new)
+name.new <- gsub("^t", "TimeDomain_", name.new)
+name.new <- gsub("^f", "FrequencyDomain_", name.new)
+name.new <- gsub("Acc", "Accelerometer", name.new)
+name.new <- gsub("Gyro", "Gyroscope", name.new)
+name.new <- gsub("Mag", "Magnitude", name.new)
+name.new <- gsub("-mean-", "_Mean_", name.new)
+name.new <- gsub("-std-", "_StandardDeviation_", name.new)
+name.new <- gsub("-", "_", name.new)
+names(data.sub) <- name.new
+data.tidy <- aggregate(data.sub[,3:81], by = list(activity = data.sub$activity, subject = data.sub$subject),FUN = mean)
+write.table(x = data.tidyset, file = "data_tidy.txt", row.names = FALSE)
